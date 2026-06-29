@@ -26,10 +26,10 @@ Consumption value
 
 The application supports both standard insert generation and batched insert generation.
 
+
 ### High-Level Flow
 
-The application follows this processing flow:
-
+```text
 Input NEM12 CSV file
         ↓
 Read file line by line
@@ -47,6 +47,8 @@ Calculate interval timestamps
 Generate SQL insert statements
         ↓
 Write output.sql
+```
+
 ### Main Components
 1. Main
 
