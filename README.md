@@ -192,12 +192,26 @@ The application handles errors at different levels.
 Examples of validation and error handling include:
 
 Invalid header records
+
+
 Unsupported parser types
+
+
 Missing 200 record before a 300 record
+
+
 Invalid interval length
+
+
 Insufficient consumption values
+
+
 Invalid consumption values
+
+
 File read/write errors
+
+
 
 For recoverable record-level errors, the application can log the issue and continue processing subsequent records.
 
