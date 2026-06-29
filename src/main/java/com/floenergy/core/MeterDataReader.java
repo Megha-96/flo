@@ -8,23 +8,23 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class MeterDataReader {
 
+    private static final Logger LOGGER =
+            Logger.getLogger(MeterDataReader.class.getName());
+
     private MDParserFactory mdParserFactory;
     private Path outputFilePath;
 
+
     public MeterDataReader(){
         mdParserFactory = new MDParserFactory();
-        outputFilePath = (Path.of("output.sql"));
-    }
-    public MeterDataReader(Path outputFilePath){
-        mdParserFactory = new MDParserFactory();
-        this.outputFilePath = outputFilePath;
     }
 
-    public void read(Path inputFile) {
+    public void read(Path inputFile, Path outputFilePath) {
     try(BufferedReader reader = Files.newBufferedReader(inputFile);
         SqlWriter sqlWriter = new SqlWriter(outputFilePath)
     ){
@@ -44,7 +44,7 @@ public class MeterDataReader {
                        break;
                    case "300":
                        List<NMIIntervalRecord> nmiIntervalRecordList = mdParser.parseNMIIntervalRecord(nmiDataDetail, fields, lineNumber);
-                       sqlWriter.write(nmiIntervalRecordList);
+                       sqlWriter.batchWrite(nmiIntervalRecordList);
                        break;
                    case "400": // Do Nothing
                    case "500":  // Do Nothing
@@ -56,7 +56,7 @@ public class MeterDataReader {
 
                }
            }catch (Exception ex){
-               System.out.println("Error occurred at line number " + lineNumber + " with message "+ ex.getMessage());
+               LOGGER.log(Level.SEVERE,"Error occurred at line number" +  lineNumber + " with message " + ex.getMessage());
            }
         }
     } catch (IOException e) {

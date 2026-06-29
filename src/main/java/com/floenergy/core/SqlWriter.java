@@ -24,6 +24,34 @@ public class SqlWriter implements AutoCloseable {
         }
     }
 
+    public void batchWrite(List<NMIIntervalRecord> intervalRecords) {
+        if (intervalRecords == null || intervalRecords.isEmpty()) {
+            return;
+        }
+
+        try {
+            writer.write("INSERT INTO meter_readings (\"nmi\", \"timestamp\", \"consumption\") VALUES");
+            writer.newLine();
+
+            for (int i = 0; i < intervalRecords.size(); i++) {
+                NMIIntervalRecord record = intervalRecords.get(i);
+
+                writer.write(toValueRow(record));
+
+                if (i == intervalRecords.size() - 1) {
+                    writer.write(";");
+                } else {
+                    writer.write(",");
+                }
+
+                writer.newLine();
+            }
+
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to write SQL insert statements", e);
+        }
+    }
+
     public void write(List<NMIIntervalRecord> intervalRecords) {
         if (intervalRecords == null || intervalRecords.isEmpty()) {
             return;
@@ -51,6 +79,19 @@ public class SqlWriter implements AutoCloseable {
 
     private String escapeSql(String value) {
         return value == null ? "" : value.replace("'", "''");
+    }
+
+    private String toValueRow(NMIIntervalRecord record) {
+        String formattedTimestamp = record.getTimestamp()
+                .toLocalDateTime()
+                .format(SQL_TIMESTAMP_FORMATTER);
+
+        return String.format(
+                "('%s', '%s', %s)",
+                record.getNMI(),
+                formattedTimestamp,
+                record.getConsumption()
+        );
     }
 
     @Override

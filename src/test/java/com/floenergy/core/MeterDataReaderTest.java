@@ -23,7 +23,7 @@ public class MeterDataReaderTest {
     void setUp() {
         inputFile = tempDir.resolve("input.csv");
         outputFile = tempDir.resolve("output.sql");
-        meterDataReader = new MeterDataReader(outputFile);
+        meterDataReader = new MeterDataReader();
     }
 
 
@@ -35,8 +35,8 @@ public class MeterDataReaderTest {
 
         Files.writeString(inputFile, validNem12InputWithOne300Record());
 
-        MeterDataReader meterDataReader = new MeterDataReader(outputFile);
-        meterDataReader.read(inputFile);
+        MeterDataReader meterDataReader = new MeterDataReader();
+        meterDataReader.read(inputFile,outputFile);
 
         assertTrue(Files.exists(outputFile));
 
@@ -64,8 +64,8 @@ public class MeterDataReaderTest {
 
         Files.writeString(inputFile, validNem12InputWithTwoNmis());
 
-        MeterDataReader meterDataReader = new MeterDataReader(outputFile);
-        meterDataReader.read(inputFile);
+        MeterDataReader meterDataReader = new MeterDataReader();
+        meterDataReader.read(inputFile,outputFile);
 
         List<String> sqlLines = Files.readAllLines(outputFile);
 
@@ -94,11 +94,11 @@ public class MeterDataReaderTest {
                         "900\n"
         );
 
-        MeterDataReader meterDataReader = new MeterDataReader(outputFile);
+        MeterDataReader meterDataReader = new MeterDataReader();
 
         RuntimeException exception = assertThrows(
                 RuntimeException.class,
-                () -> meterDataReader.read(inputFile)
+                () -> meterDataReader.read(inputFile,outputFile)
         );
 
         assertTrue(exception.getMessage().contains("Invalid Header"));
@@ -115,8 +115,8 @@ public class MeterDataReaderTest {
                         "900\n"
         );
 
-        MeterDataReader meterDataReader = new MeterDataReader(outputFile);
-        meterDataReader.read(inputFile);
+        MeterDataReader meterDataReader = new MeterDataReader();
+        meterDataReader.read(inputFile,outputFile);
 
         assertTrue(Files.exists(outputFile));
         assertEquals(0, Files.readAllLines(outputFile).size());
@@ -138,8 +138,8 @@ public class MeterDataReaderTest {
                         "900\n"
         );
 
-        MeterDataReader meterDataReader = new MeterDataReader(outputFile);
-        meterDataReader.read(inputFile);
+        MeterDataReader meterDataReader = new MeterDataReader();
+        meterDataReader.read(inputFile,outputFile);
 
         List<String> sqlLines = Files.readAllLines(outputFile);
 

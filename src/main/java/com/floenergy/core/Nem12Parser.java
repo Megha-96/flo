@@ -4,7 +4,7 @@ import com.floenergy.core.util.ConsumptionValueValidator;
 import com.floenergy.core.util.IntervalTimestampCalculator;
 import com.floenergy.model.NMIDataDetail;
 import com.floenergy.model.NMIIntervalRecord;
-import org.apache.commons.lang3.StringUtils;
+
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -13,12 +13,15 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static com.floenergy.contants.MDConstants.ALLOWED_INTERVAL_LENGTH;
 
 public class Nem12Parser implements MDParser {
 
-
+    private static final Logger LOGGER =
+            Logger.getLogger(Nem12Parser.class.getName());
 
     @Override
     public String extractRecordIndicator(String[] fields) {
@@ -29,7 +32,7 @@ public class Nem12Parser implements MDParser {
     public NMIDataDetail parseNMIDataDetail(String[] fields) {
         String NMI = fields[1];
         String intervalLength = fields[8];
-        if(StringUtils.isBlank(NMI)){
+        if(NMI == null || NMI.isBlank()){
             throw new RuntimeException(intervalLength + "NMI is null or blank");
         }
         if(!ALLOWED_INTERVAL_LENGTH.contains(intervalLength)){
@@ -60,7 +63,7 @@ public class Nem12Parser implements MDParser {
             List<String> errors = new ArrayList<>();
             Optional<BigDecimal> consumption = ConsumptionValueValidator.parseConsumption(consumptionValue,lineNumber, i, errors);
             if(consumption.isEmpty()){
-                System.out.println("Invalid Consumption Value  " + errors.get(0));
+                LOGGER.log(Level.WARNING,"Invalid Consumption Value " + errors.get(0));
                 continue;
             }
             Timestamp timestamp = IntervalTimestampCalculator.calculateIntervalTimestamp(localDate, i, intervalLengthInMinutes);
