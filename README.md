@@ -52,7 +52,7 @@ Write output.sql
 ### Main Components
 
 
-#### 1. Main
+#### Main
 
 The Main class is the entry point of the application.
 
@@ -70,7 +70,7 @@ java -jar target/nem12-parser-1.0-SNAPSHOT.jar input.csv output.sql
 If no output path is provided, the application can use a default output file such as:
 
 output.sql
-#### 2. MeterDataReader
+#### MeterDataReader
 
 MeterDataReader is responsible for reading the input file and coordinating the parsing flow.
 
@@ -87,7 +87,7 @@ It processes records based on their record indicator:
 
 The reader keeps track of the current 200 record context so that subsequent 300 interval records can be associated with the correct NMI.
 
-#### 3. MDParserFactory
+#### MDParserFactory
 
 MDParserFactory is responsible for returning the correct parser based on the meter data file type.
 
@@ -97,7 +97,7 @@ NEM12
 
 This keeps the design extensible. If support for another meter data format is required later, a new parser implementation can be added without changing the main reading flow.
 
-#### 4. Nem12Parser
+#### Nem12Parser
 
 Nem12Parser contains the NEM12-specific parsing logic.
 
@@ -117,7 +117,7 @@ For example, based on the interval length:
 5-minute interval  -> 288 readings per day
 
 
-#### 5. IntervalTimestampCalculator
+#### IntervalTimestampCalculator
 
 IntervalTimestampCalculator calculates the timestamp for each interval value.
 
@@ -128,7 +128,7 @@ For example, with a 30-minute interval length:
 Interval 1  -> 00:30:00
 Interval 2  -> 01:00:00
 Interval 48 -> 00:00:00 on the next day
-#### 6. ConsumptionValueValidator
+#### ConsumptionValueValidator
 
 ConsumptionValueValidator validates interval consumption values before they are written to SQL.
 
@@ -141,7 +141,7 @@ Exponential notation
 
 Only valid consumption values are converted into meter reading records.
 
-#### 7. SqlWriter
+#### SqlWriter
 
 SqlWriter writes parsed meter readings into an output SQL file.
 
