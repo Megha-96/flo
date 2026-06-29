@@ -49,7 +49,7 @@ Generate SQL insert statements
 Write output.sql
 ```
 
-### Main Components
+### Core Components
 
 
 #### Main
