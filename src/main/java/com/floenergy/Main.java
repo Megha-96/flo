@@ -28,7 +28,6 @@ public class Main {
            LOGGER.log(Level.INFO,"Successfully generated SQL insert statements at: " + outputFile.toAbsolutePath());
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE,"Failed to process NEM12 file " + e.getMessage());
-            System.exit(1);
         }
     }
 
