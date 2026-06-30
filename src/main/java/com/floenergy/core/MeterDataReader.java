@@ -33,19 +33,19 @@ public class MeterDataReader {
         String headerLine = reader.readLine();
         //fetch parser from header
         MDParser mdParser = getParser(getFields(headerLine,lineNumber));
-        NMIDataDetail  previousNmiDataDetail = null;
-        Integer recordIndicator = null;
+        NMIDataDetail currentNMIDetail = null;
+
         while((line = reader.readLine())!=null){
            String[] fields = getFields(line,lineNumber++);
             try {
-             recordIndicator = mdParser.extractRecordIndicator(fields);
-               switch (recordIndicator) {
+                Integer recordIndicator = mdParser.extractRecordIndicator(fields); // Do we need to fail fast if record indicator is invalid, Is it a scenario ??
+                switch (recordIndicator) {
                    case 200:
-                       NMIDataDetail  nmiDataDetail = mdParser.parseNMIDataDetail(fields);
-                       previousNmiDataDetail = nmiDataDetail;
+                       currentNMIDetail = null;// if 200 record is invalid then further 300 records should not be processed.
+                       currentNMIDetail = mdParser.parseNMIDataDetail(fields);
                        break;
                    case 300:
-                       List<NMIIntervalRecord> nmiIntervalRecordList = mdParser.parseNMIIntervalRecord(previousNmiDataDetail, fields, lineNumber);
+                       List<NMIIntervalRecord> nmiIntervalRecordList = mdParser.parseNMIIntervalRecord(currentNMIDetail, fields, lineNumber);
                        sqlWriter.batchWrite(nmiIntervalRecordList);
                        break;
                    case 400: // Do Nothing
@@ -58,7 +58,6 @@ public class MeterDataReader {
 
                }
            }catch (Exception ex){
-                if(200 == recordIndicator) previousNmiDataDetail = null; // if 200 record is invalid then further 300 records should not be processed.
                LOGGER.log(Level.SEVERE,"Error occurred at line number" +  lineNumber + " with message " + ex.getMessage());
            }
         }
