@@ -119,25 +119,7 @@ A future optimization could support configurable batch sizes, for example:
 
 This would give more control over output size, SQL execution performance, and database compatibility.
 
-
-## Project Overview
-
-This project is a Java-based command-line application for parsing NEM12 meter data files and generating SQL insert statements for meter readings.
-
-The application reads a NEM12 CSV file, parses NMI details and interval consumption records, calculates the correct timestamp for each interval reading, validates consumption values, and writes the parsed data into an output SQL file.
-
-The generated SQL targets the following table structure:
-
-```sql
-meter_readings (
-    nmi,
-    timestamp,
-    consumption
-)
-```
 ### What is the rationale for the design choices that you have made? 
-
-### What is the rationale for the design choices that you have made?
 
 The design focuses on simplicity, testability, extensibility, and large-file handling.
 
@@ -208,6 +190,23 @@ This makes it possible to change the output format later without affecting the p
 
 The application supports batched insert generation because it reduces the number of SQL statements and is more efficient for larger files compared with generating one insert statement per interval reading.
 
+
+
+## Project Overview
+
+This project is a Java-based command-line application for parsing NEM12 meter data files and generating SQL insert statements for meter readings.
+
+The application reads a NEM12 CSV file, parses NMI details and interval consumption records, calculates the correct timestamp for each interval reading, validates consumption values, and writes the parsed data into an output SQL file.
+
+The generated SQL targets the following table structure:
+
+```sql
+meter_readings (
+    nmi,
+    timestamp,
+    consumption
+)
+```
 
 ## Intent
 
