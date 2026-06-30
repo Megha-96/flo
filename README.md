@@ -12,7 +12,8 @@
   - Sql Writer
   - ConsumptionValueValidator
   
-* Entry point/Main file : https://github.com/Megha-96/flo/blob/main/src/main/java/com/floenergy/Main.java
+* Entry point/Main file : https://github.com/Megha-96/flo/blob/main/src/main/java/com/floenergy/FloDataProcessor.java
+
 * More details on core component : https://github.com/Megha-96/flo/blob/main/README.md#core-components
 
 
@@ -260,9 +261,9 @@ Write output.sql
 
 ## Core Components
 
-### Main
+### FloDataProcessor
 
-The `Main` class is the entry point of the application.
+The `FloDataProcessor` class is the entry point of the application.
 
 It is responsible for:
 
