@@ -56,7 +56,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.floenergy.Main</mainClass>
+                            <mainClass>com.floenergy.FloDataProcessor</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

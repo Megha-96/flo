@@ -9,9 +9,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
-public class Main {
+public class FloDataProcessor {
     private static final Logger LOGGER =
-           Logger.getLogger(Main.class.getName());
+           Logger.getLogger(FloDataProcessor.class.getName());
 
     private  static MeterDataReader meterDataReader;
 
@@ -32,7 +32,7 @@ public class Main {
     }
 
     private static Path getResourceFilePath(String fileName) {
-        URL resource = Main.class.getClassLoader().getResource(fileName);
+        URL resource = FloDataProcessor.class.getClassLoader().getResource(fileName);
         if (resource == null) {
             throw new RuntimeException("Resource file not found: " + fileName);
         }
