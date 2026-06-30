@@ -1,6 +1,124 @@
 # Flo
 
 ## Technical Assessment
+## Assessment Questions
+
+### What is the rationale for the technologies you have decided to use?
+
+I chose Java for this implementation because it provides strong standard library support for file handling, date/time processing, validation, and object-oriented design.
+
+The application uses Maven as the build tool because it provides a simple and standard way to manage project structure, dependencies, builds, and tests. It also makes the project easy to run and verify using common commands such as:
+
+```bash
+mvn clean test
+mvn clean package
+```
+
+For file processing, I used `BufferedReader` and `BufferedWriter` from the Java standard library. This was an intentional choice because the input files can be very large. Reading the file line by line avoids loading the full NEM12 file into memory, making the application more scalable for large files.
+
+JUnit 5 is used for testing because it is a widely used testing framework in Java and allows the parsing, validation, timestamp calculation, and SQL writing logic to be tested independently.
+
+I avoided using Spring Boot or heavier frameworks to keep the application lightweight and focused on the core parsing and SQL generation functionality.
+
+---
+
+### What would you have done differently if you had more time?
+
+#### Current Assumptions
+
+The current implementation is based on the following assumptions:
+
+* Fields must not include leading or trailing spaces.
+* A null value is not allowed in the `IntervalValue` field of the NEM12 file.
+* A comma is required between all fields, even if the field is null.
+* Commas are not permitted in any data field.
+* Records are expected to follow the correct blocking order:
+
+```text
+100 -> 200 -> 300 -> 400 -> 500 -> 900
+```
+
+* A `300` interval record must appear after a corresponding `200` NMI data detail record.
+* The current implementation validates the fields needed to generate meter reading SQL, such as:
+
+  * NMI
+  * Interval length
+  * Interval date
+  * Consumption values
+* All consumption values are currently assumed to use `kWh` as the unit of measure.
+
+---
+
+#### Further Improvements
+
+##### Full NEM12 Specification Validation
+
+With more time, I would extend the parser to validate the full NEM12 specification more strictly.
+
+This would include:
+
+* Mandatory field validation for `100`, `200`, `300`, `400`, `500`, and `900` records
+* NMI value validation, including prefix validation
+* Correct record sequencing validation
+* Unit of measure validation
+* Conversion of consumption values into one uniform unit of measure
+* Validation of quality methods and reason codes
+
+---
+
+##### Spring Boot Application with Direct Database Ingestion
+
+The current requirement is to generate SQL insert statements.
+
+For a production-grade version, I would introduce an API-based ingestion layer to upload MeterData files and persist parsed meter readings directly into configurable data sources such as PostgreSQL or MySQL using an ORM framework like JPA/Hibernate.
+
+This could include:
+
+* A REST API to upload MeterData files
+* Database integration with PostgreSQL or MySQL
+* ORM-based persistence using JPA/Hibernate
+* JDBC batch inserts for higher throughput
+* Transactional database writes
+* Retry handling for transient database failures
+
+This would reduce output file size and improve ingestion performance for very large files.
+
+---
+
+##### Configurable Output Format
+
+The current implementation generates SQL output.
+
+In the future, the output format could be made configurable.
+
+Supported output modes could include:
+
+```text
+SQL_INSERT
+BATCHED_SQL_INSERT
+CSV
+JSON
+DIRECT_DB_WRITE
+```
+
+This would make the application more flexible and easier to integrate with different downstream systems.
+
+---
+
+##### Larger Batch Size Control
+
+The current batched insert approach generates one batched insert per `300` record.
+
+A future optimization could support configurable batch sizes, for example:
+
+```text
+500 rows per insert
+1000 rows per insert
+5000 rows per insert
+```
+
+This would give more control over output size, SQL execution performance, and database compatibility.
+
 
 ## Project Overview
 
@@ -17,6 +135,79 @@ meter_readings (
     consumption
 )
 ```
+### What is the rationale for the design choices that you have made? 
+
+### What is the rationale for the design choices that you have made?
+
+The design focuses on simplicity, testability, extensibility, and large-file handling.
+
+#### Streaming File Processing
+
+The application reads the input file line by line instead of loading the full file into memory.
+
+This is important because NEM12 files can be very large. Streaming keeps memory usage low and makes the application suitable for multi-GB files.
+
+#### Separation of Responsibilities
+
+The code is split into focused components:
+
+* `Main` handles application startup and command-line arguments.
+* `MeterDataReader` coordinates file reading and record processing.
+* `MDParserFactory` selects the correct parser based on the file type.
+* `Nem12Parser` contains NEM12-specific parsing logic.
+* `ConsumptionValueValidator` validates interval consumption values.
+* `IntervalTimestampCalculator` calculates interval timestamps.
+* `SqlWriter` writes SQL output.
+
+This separation keeps each class easier to understand, test, and modify.
+
+#### Parser Abstraction
+
+The parser is accessed through an `MDParser` interface and selected using `MDParserFactory`.
+
+Although the current implementation supports NEM12, this design allows additional parser implementations to be added later without changing the file reading flow.
+
+#### Maintaining Current NMI Context
+
+NEM12 files contain `200` records that define the NMI and interval length, followed by `300` records containing interval values.
+
+The reader keeps track of the current `200` record context so that each following `300` record can be correctly associated with the right NMI.
+
+#### Interval Timestamp Calculation
+
+The timestamp calculation is kept in a separate utility class because it is a core rule of the NEM12 format.
+
+This makes the logic reusable and easy to test independently.
+
+For example, for a 30-minute interval:
+
+```text
+Interval 1  -> 00:30:00
+Interval 2  -> 01:00:00
+Interval 48 -> 00:00:00 on the next day
+```
+
+#### Consumption Value Validation
+
+Consumption validation is separated from parsing so that the parser does not become responsible for all validation rules.
+
+This keeps the parsing logic cleaner and allows validation rules to be tested independently.
+
+The validator rejects invalid values such as:
+
+* Blank values
+* Non-numeric values
+* Negative values
+* Exponential notation
+
+#### SQL Writer Abstraction
+
+SQL generation is handled by `SqlWriter`, separate from parsing.
+
+This makes it possible to change the output format later without affecting the parser.
+
+The application supports batched insert generation because it reduces the number of SQL statements and is more efficient for larger files compared with generating one insert statement per interval reading.
+
 
 ## Intent
 
