@@ -67,10 +67,10 @@ The current implementation is based on the following assumptions:
 
 #### Further Improvements
 
-##### Full NEM12 Specification Validation
+##### Full NEM12 Specification Validation and zip file input support
 
 With more time, I would extend the parser to validate the full NEM12 specification more strictly.
-
+To support .zip files as allowed by the MDFF specification.
 This would include:
 
 * Mandatory field validation for `100`, `200`, `300`, `400`, `500`, and `900` records
