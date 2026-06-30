@@ -24,9 +24,9 @@ class Nem12ParserTest {
     void shouldExtractRecordIndicator() {
         String[] fields = "300,20050301,0.1".split(",", -1);
 
-        String recordIndicator = parser.extractRecordIndicator(fields);
+        Integer recordIndicator = parser.extractRecordIndicator(fields);
 
-        assertEquals("300", recordIndicator);
+        assertEquals(300, recordIndicator);
     }
 
     @Test

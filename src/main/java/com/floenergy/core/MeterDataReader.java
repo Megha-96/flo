@@ -29,33 +29,36 @@ public class MeterDataReader {
         SqlWriter sqlWriter = new SqlWriter(outputFilePath)
     ){
         String line;
-        int lineNumber=1;
+        int lineNumber = 1;
         String headerLine = reader.readLine();
         //fetch parser from header
         MDParser mdParser = getParser(getFields(headerLine,lineNumber));
-        NMIDataDetail  nmiDataDetail = null;
+        NMIDataDetail  previousNmiDataDetail = null;
+        Integer recordIndicator = null;
         while((line = reader.readLine())!=null){
            String[] fields = getFields(line,lineNumber++);
-           String recordIndicator = mdParser.extractRecordIndicator(fields);
-           try {
+            try {
+             recordIndicator = mdParser.extractRecordIndicator(fields);
                switch (recordIndicator) {
-                   case "200":
-                       nmiDataDetail = mdParser.parseNMIDataDetail(fields);
+                   case 200:
+                       NMIDataDetail  nmiDataDetail = mdParser.parseNMIDataDetail(fields);
+                       previousNmiDataDetail = nmiDataDetail;
                        break;
-                   case "300":
-                       List<NMIIntervalRecord> nmiIntervalRecordList = mdParser.parseNMIIntervalRecord(nmiDataDetail, fields, lineNumber);
+                   case 300:
+                       List<NMIIntervalRecord> nmiIntervalRecordList = mdParser.parseNMIIntervalRecord(previousNmiDataDetail, fields, lineNumber);
                        sqlWriter.batchWrite(nmiIntervalRecordList);
                        break;
-                   case "400": // Do Nothing
-                   case "500":  // Do Nothing
+                   case 400: // Do Nothing
+                   case 500:  // Do Nothing
                        break;
-                   case "900":  // end of file reading;
+                   case 900:  // end of file reading;
                        return;
                    default:
                        throw new RuntimeException("Unsupported record indicator " + recordIndicator);
 
                }
            }catch (Exception ex){
+                if(200 == recordIndicator) previousNmiDataDetail = null; // if 200 record is invalid then further 300 records should not be processed.
                LOGGER.log(Level.SEVERE,"Error occurred at line number" +  lineNumber + " with message " + ex.getMessage());
            }
         }

@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface MDParser {
 
-    String extractRecordIndicator(String[] fields);
+    Integer extractRecordIndicator(String[] fields);
     NMIDataDetail parseNMIDataDetail(String[] fields);
     List<NMIIntervalRecord> parseNMIIntervalRecord(NMIDataDetail nmiDataDetail, String[] fields, int linenumber);
 }

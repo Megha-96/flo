@@ -24,8 +24,12 @@ public class Nem12Parser implements MDParser {
             Logger.getLogger(Nem12Parser.class.getName());
 
     @Override
-    public String extractRecordIndicator(String[] fields) {
-        return fields[0];
+    public Integer extractRecordIndicator(String[] fields) {
+        String recordIndicator = fields[0];
+        if(recordIndicator == null || recordIndicator.isBlank() || recordIndicator.length() == 0){
+            throw new RuntimeException("record Indicator is null or blank");
+        }
+        return Integer.parseInt(recordIndicator);
     }
 
     @Override
@@ -33,7 +37,7 @@ public class Nem12Parser implements MDParser {
         String NMI = fields[1];
         String intervalLength = fields[8];
         if(NMI == null || NMI.isBlank()){
-            throw new RuntimeException(intervalLength + "NMI is null or blank");
+            throw new RuntimeException("NMI is null or blank");
         }
         if(!ALLOWED_INTERVAL_LENGTH.contains(intervalLength)){
             throw new RuntimeException(intervalLength + " Interval length not allowed");
@@ -45,7 +49,7 @@ public class Nem12Parser implements MDParser {
     @Override
     public List<NMIIntervalRecord> parseNMIIntervalRecord(NMIDataDetail nmiDataDetail, String[] fields, int lineNumber) {
         if(nmiDataDetail == null){
-            throw new RuntimeException("current NMI Data detail(200) Not found for 300 record");
+            throw new RuntimeException("current NMI Data detail(200) Not found or invalid for 300 record");
         }
         List<NMIIntervalRecord> meterDataIntervalsForTheDay = new ArrayList<>();
         String intervalDate = fields[1];

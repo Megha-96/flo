@@ -27,7 +27,6 @@ public class Main {
             meterDataReader.read(inputFile,outputFile);
            LOGGER.log(Level.INFO,"Successfully generated SQL insert statements at: " + outputFile.toAbsolutePath());
         } catch (Exception e) {
-            e.printStackTrace();
             LOGGER.log(Level.SEVERE,"Failed to process NEM12 file " + e.getMessage());
             System.exit(1);
         }
