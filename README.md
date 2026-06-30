@@ -5,6 +5,16 @@
 * sample input file : https://github.com/Megha-96/flo/blob/main/input.csv
 
 * sample output file : https://github.com/Megha-96/flo/blob/main/output.sql
+  
+* Core files : https://github.com/Megha-96/flo/tree/main/src/main/java/com/floenergy/core
+  - MeterDataReader
+  - Nem12Parser/ParserFactory
+  - Sql Writer
+  - ConsumptionValueValidator
+  
+* Entry point/Main file : https://github.com/Megha-96/flo/blob/main/src/main/java/com/floenergy/Main.java
+* More details on core component : https://github.com/Megha-96/flo/blob/main/README.md#core-components
+
 
   
 ## Assessment Questions
