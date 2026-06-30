@@ -1,6 +1,12 @@
 # Flo
 
 ## Technical Assessment
+
+* sample input file : https://github.com/Megha-96/flo/blob/main/input.csv
+
+* sample output file : https://github.com/Megha-96/flo/blob/main/output.sql
+
+  
 ## Assessment Questions
 
 ### What is the rationale for the technologies you have decided to use?
